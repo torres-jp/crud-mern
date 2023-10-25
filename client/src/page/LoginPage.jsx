@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
   const {
@@ -7,14 +8,22 @@ function LoginPage() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const { signin, errors: loginErrors } = useAuth();
+
+  const onSubmit = handleSubmit(async (data) => {
+    const res = await signin(data);
+    console.log(res);
   });
 
   return (
     <div className="flex h-[calc(100vh-100px)]  items-center justify-center">
       <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
         <h1 className="text-2xl font-bold">Login</h1>
+        {loginErrors.map((error, i) => (
+          <div className="bg-red-500 p-2 text-white my-2" key={i}>
+            {error}
+          </div>
+        ))}
         <form onSubmit={onSubmit}>
           <input
             type="email"
