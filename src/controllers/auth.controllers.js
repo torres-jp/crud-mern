@@ -1,6 +1,8 @@
 import User from "../models/user.models.js";
 import bcrypt from "bcryptjs";
 import { createAccesToken } from "../libs/jwt.js";
+import jwt from "jsonwebtoken";
+import { TOKEN_SECRET } from "../config.js";
 
 export const register = async (req, res) => {
   const { username, password, email } = req.body;
@@ -62,6 +64,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res.send(500).json({ message: error.message });
+    console.log(token);
   }
 };
 
@@ -82,5 +85,23 @@ export const profile = async (req, res) => {
     email: userFound.email,
     updatedAt: userFound.updatedAt,
     createdAt: userFound.createdAt,
+  });
+};
+
+export const verifyToken = async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  jwt.verify(token, TOKEN_SECRET, async (err, user) => {
+    if (err) return res.status(401).json({ message: "Unauthorized" });
+
+    const userFound = await User.findById(user.id);
+    if (!userFound) return res.status(401).json({ message: "Unauthorized" });
+
+    return res.json({
+      id: userFound._id,
+      username: userFound.username,
+      email: userFound.email,
+    });
   });
 };

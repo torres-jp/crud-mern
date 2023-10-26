@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function LoginPage() {
   const {
@@ -10,9 +11,8 @@ function LoginPage() {
 
   const { signin, errors: loginErrors } = useAuth();
 
-  const onSubmit = handleSubmit(async (data) => {
-    const res = await signin(data);
-    console.log(res);
+  const onSubmit = handleSubmit((data) => {
+    signin(data);
   });
 
   return (
@@ -48,6 +48,13 @@ function LoginPage() {
             Login
           </button>
         </form>
+        <p className="flex gap-x-2 justify-between">
+          {" "}
+          Dont have an account?{" "}
+          <Link to="/register" className="text-sky-500">
+            Sign up
+          </Link>{" "}
+        </p>
       </div>
     </div>
   );
